@@ -21,6 +21,11 @@
                         Stok Barang
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link :href="route('laporan')" :active="request()->routeIs('laporan')">
+                        Laporan
+                    </x-nav-link>
+                </div>
             </div>
 
             <!-- Settings Dropdown -->

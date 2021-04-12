@@ -5,14 +5,17 @@ namespace App\Http\Livewire;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Models\Stock as StockModel;
+use Livewire\WithPagination;
 
 class Stock extends Component
 {
-    public $stock, $nama_barang, $harga_satuan, $jumlah, $barcode, $open = false;
+    use WithPagination;
+    public $nama_barang, $harga_satuan, $jumlah, $barcode, $jumlahnew = 0, $invalid = false, $pencarian, $ubahhar = 0, $invalidharga = false;
     public function render()
     {
-        $this->stock = StockModel::where('user_id', Auth::id())->get();
-        return view('livewire.stock');
+        return view('livewire.stock', [
+            'stock' => StockModel::where('user_id', Auth::id())->where('nama_barang', 'like', '%'.$this->pencarian.'%')->paginate(5),
+        ]);
     }
 
     public function create()
@@ -22,6 +25,8 @@ class Stock extends Component
 
     public function resetFields()
     {
+        $this->invalidharga = true;
+        $this->invalid = false;
         $this->nama_barang = '';
         $this->harga_satuan = '';
         $this->jumlah = '';
@@ -45,5 +50,43 @@ class Stock extends Component
         $stock->save();
         session()->flash('message', 'berhasil dimasukkan');
         $this->resetFields();
+    }
+
+    public function tambah($id)
+    {
+        $this->invalidharga = false;
+        $this->invalid = false;
+        $stock = StockModel::find($id);
+        if(!is_numeric($this->jumlahnew))
+        {
+            $this->invalid = true;
+            return;
+        }
+        if($stock->jumlah + $this->jumlahnew < 0)
+        {
+            $this->invalid = true;
+            return;
+        }
+        $stock->jumlah = $stock->jumlah + $this->jumlahnew;
+        $stock->save();
+    }
+
+    public function ubahharga($id)
+    {
+        if(!is_numeric($this->ubahhar))
+        {
+            $this->invalidharga = true;
+            return;
+        }
+        if($this->ubahhar < 0)
+        {
+            $this->invalidharga = true;
+            return;
+        }
+        $this->invalidharga = false;
+        $barang = StockModel::find($id);
+        $barang->harga_satuan = $this->ubahhar;
+        $barang->save();
+        $this->ubahhar = 0;
     }
 }
