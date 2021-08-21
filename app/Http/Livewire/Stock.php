@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Toko;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Models\Stock as StockModel;
@@ -13,8 +14,13 @@ class Stock extends Component
     public $nama_barang, $harga_satuan, $jumlah, $barcode, $jumlahnew = 0, $invalid = false, $pencarian, $ubahhar = 0, $invalidharga = false;
     public function render()
     {
+        $user_id = Auth::id();
+        if(Auth::user()->toko_id)
+        {
+            $user_id = Toko::where('id', Auth::user()->toko_id)->first()->user_id;
+        }
         return view('livewire.stock', [
-            'stock' => StockModel::where('user_id', Auth::id())->where('nama_barang', 'like', '%'.$this->pencarian.'%')->paginate(5),
+            'stock' => StockModel::where('user_id', $user_id)->where('nama_barang', 'like', '%'.$this->pencarian.'%')->paginate(5),
         ]);
     }
 
@@ -46,7 +52,12 @@ class Stock extends Component
         $stock->harga_satuan = $this->harga_satuan;
         $stock->jumlah = $this->jumlah;
         $stock->barcode = $this->barcode;
-        $stock->user_id = Auth::id();
+        if(Auth::user()->toko_id)
+        {
+            $stock->user_id = Toko::where('id', Auth::user()->toko_id)->first()->user_id;
+        } else {
+            $stock->user_id = Auth::id();
+        }
         $stock->save();
         session()->flash('message', 'berhasil dimasukkan');
         $this->resetFields();

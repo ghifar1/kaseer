@@ -20,6 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'uuid',
+        'hp',
     ];
 
     /**
@@ -44,5 +46,10 @@ class User extends Authenticatable
     public function stock()
     {
        return $this->hasMany(Stock::class);
+    }
+
+    public function toko()
+    {
+        return $this->hasOne(Toko::class);
     }
 }

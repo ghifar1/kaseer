@@ -21,11 +21,19 @@
                         Stok Barang
                     </x-nav-link>
                 </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('laporan')" :active="request()->routeIs('laporan')">
-                        Laporan
-                    </x-nav-link>
-                </div>
+                @if(\Illuminate\Support\Facades\Auth::user()->is_premium)
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <x-nav-link :href="route('laporan')" :active="request()->routeIs('laporan')">
+                            Laporan
+                        </x-nav-link>
+                    </div>
+                @else
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <x-nav-link :href="route('pricing')" :active="request()->routeIs('laporan')">
+                            Buy
+                        </x-nav-link>
+                    </div>
+                @endif
             </div>
 
             <!-- Settings Dropdown -->
@@ -45,6 +53,9 @@
 
                     <x-slot name="content">
                         <!-- Authentication -->
+                        <x-dropdown-link :href="url('setting')">
+                            Akun
+                        </x-dropdown-link>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 

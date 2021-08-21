@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Toko;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Models\Stock;
@@ -15,8 +16,13 @@ class Kasir extends Component
     public $pencarian, $idbarang, $jumlah = 1, $outofstock = false;
     public function render()
     {
+        $user_id = Auth::id();
+        if(Auth::user()->toko_id)
+        {
+            $user_id = Toko::where('id', Auth::user()->toko_id)->first()->user_id;
+        }
         return view('livewire.kasir', [
-            'barang' => Stock::where('user_id', Auth::id())->where('nama_barang', 'like', '%'.$this->pencarian.'%')->paginate(4),
+            'barang' => Stock::where('user_id', $user_id)->where('nama_barang', 'like', '%'.$this->pencarian.'%')->paginate(4),
             'cart' => session()->get('cart'),
         ]);
     }
@@ -88,7 +94,12 @@ class Kasir extends Component
             $total = $total + ($c['jumlah']*$c['harga']);
         }
         $history->total = $total;
-        $history->user_id = Auth::id();
+        if(Auth::user()->toko_id)
+        {
+            $history->user_id = Toko::where('id', Auth::user()->toko_id)->first()->user_id;
+        } else {
+            $history->user_id = Auth::id();
+        }
         $history->save();
         session()->forget('cart');
     }

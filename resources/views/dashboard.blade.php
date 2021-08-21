@@ -2,6 +2,9 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Kasir
+            @if($user->toko_id)
+                <span class="text-green-600">(Toko {{ \App\Models\Toko::where('id', $user->toko_id)->first()->name }})</span>
+            @endif
         </h2>
     </x-slot>
 

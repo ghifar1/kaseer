@@ -9,6 +9,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Ramsey\Uuid\Uuid;
 
 class RegisteredUserController extends Controller
 {
@@ -34,18 +35,39 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'hp' => 'required|numeric',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|confirmed|min:8',
         ]);
 
         Auth::login($user = User::create([
+            'uuid' => $this->randomUuid(),
             'name' => $request->name,
+            'hp' => $request->hp,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_premium' => false,
         ]));
 
         event(new Registered($user));
 
         return redirect(RouteServiceProvider::HOME);
+    }
+
+    public function randomUuid()
+    {
+        $length = 5;
+        $characters = '123456789abcdefghjkmnpqrstuvwxyz';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        $randomString .= '-';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
     }
 }

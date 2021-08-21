@@ -99,7 +99,7 @@
             </thead>
             <tbody>
             @foreach($stock as $st)
-            <tr>
+            <tr class="@if($st->jumlah <= 7 && $st->jumlah > 5) bg-yellow-300 @elseif($st->jumlah <= 3 && $st->jumlah >= 0) bg-red-500 @else @endif">
                 <th scope="row" >{{$loop->index + 1}}</th>
                 <td>{{$st->nama_barang}}</td>
                 <td>
