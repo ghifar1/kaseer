@@ -87,6 +87,9 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 Kasir
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('stok')" :active="request()->routeIs('stok')">
+                Stok Barang
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
